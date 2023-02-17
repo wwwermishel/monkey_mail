@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
-require 'drill/params'
-require 'drill/mail'
+require 'monkey_mail/mail'
 
-module Drill
+module MonkeyMail
   class Mailer
+    PERMITTED_PARAM_KYES = %i[subject from_name from_email to vars template_name skip_delivery]
+
     attr_reader :action_name
 
     class << self
@@ -28,17 +29,19 @@ module Drill
     def mail(params = {})
       params[:template_name] ||= action_name
 
-      params = Params.new(permitted_params(params))
-      params.merge_vars(vars_from_instance_variables)
-      params.merge_vars(Drill.configuration.default_vars)
+      result_params = MonkeyMail.configuration.default_mail_parameters
+      result_params.merge!(vars: vars_from_instance_variables)
+      result_params.merge!(params)
+      result_params[:to] = [params[:to]] if params[:to].is_a? String
+      result_params = permitted_params(result_params)
 
-      Mail.new(params)
+      Mail.new(result_params)
     end
 
     private
 
     def permitted_params(params)
-      params.slice(*Params.members)
+      params.slice(*PERMITTED_PARAM_KYES)
     end
 
     def vars_from_instance_variables

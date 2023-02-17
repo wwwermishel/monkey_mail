@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
-module Drill
+module MonkeyMail
   module Mail
-    autoload :Default, 'drill/mail/default'
-    autoload :LetterOpener, 'drill/mail/letter_opener'
+    autoload :Default, 'monkey_mail/mail/default'
+    autoload :LetterOpener, 'monkey_mail/mail/letter_opener'
 
     module_function
 
@@ -12,7 +10,7 @@ module Drill
     end
 
     def mail
-      case Drill.configuration.delivery_method
+      case MonkeyMail.configuration.delivery_method
       when :letter_opener
         LetterOpener
       else

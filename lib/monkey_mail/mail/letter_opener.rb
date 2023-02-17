@@ -2,9 +2,9 @@
 
 require 'mail'
 require 'letter_opener'
-require 'drill/mail/base'
+require 'monkey_mail/mail/base'
 
-module Drill
+module MonkeyMail
   module Mail
     class LetterOpener < Base
       attr_reader :mail, :delivery_method
@@ -21,7 +21,7 @@ module Drill
       end
 
       def deliver
-        return if params.skip_delivery
+        return if params[:skip_delivery]
 
         prepare_mail!
 
@@ -35,22 +35,15 @@ module Drill
       private
 
       def prepare_mail!
-        mail.to = Array(params.to) + Array(params.cc)
-        mail.from = params.from_email
-        mail.sender = params.from_name
-        mail.reply_to = params.reply_to
+        mail.to =params[:to]
+        mail.from = params[:from_email]
+        mail.sender = params[:from_name]
         mail.content_type = 'text/html'
         mail.body = render_html
       end
 
       def render_html
-        template_name = params.template_name
-        merge_vars =
-          params.vars.each.with_object([]) do |(name, content), arr|
-            arr << { name: name.to_s.upcase, content: content }
-          end
-
-        Drill.client.templates.render(template_name, [], merge_vars)['html']
+        MonkeyMail.client.render_template(delivery_params)
       end
     end
   end
