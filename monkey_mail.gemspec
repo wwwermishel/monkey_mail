@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'letter_opener', '~> 1.8'
+  spec.add_development_dependency 'letter_opener_web', '~> 2.0'
   spec.add_development_dependency 'mail', '~> 2.7'
   spec.add_development_dependency 'rest-client', '~> 2.1'
 

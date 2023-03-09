@@ -11,7 +11,7 @@ module MonkeyMail
 
     def mail
       case MonkeyMail.configuration.delivery_method
-      when :letter_opener
+      when :letter_opener, :letter_opener_web
         LetterOpener
       else
         Default

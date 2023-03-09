@@ -4,9 +4,8 @@ require 'monkey_mail'
 
 RSpec.describe MonkeyMail::Mail::LetterOpener do
   let(:mail) do
-    MonkeyMail::Mail::LetterOpener.new(params, mail_double, delivery_method_double)
+    MonkeyMail::Mail::LetterOpener.new(params)
   end
-  let(:mail_double) { Mail.new }
   let(:delivery_method_double) do
     instance_double(LetterOpener::DeliveryMethod, deliver!: true)
   end
@@ -29,23 +28,25 @@ RSpec.describe MonkeyMail::Mail::LetterOpener do
 
     before do
       allow(MonkeyMail).to receive(:client).and_return(client)
+      allow_any_instance_of(MonkeyMail::Mail::LetterOpener).to receive(:delivery_method).and_return(delivery_method_double)
     end
 
     describe '#deliver' do
       it 'prepares mail from params' do
-        aggregate_failures do
-          expect(mail_double).to receive(:to=).with('to@email.com')
-          expect(mail_double).to receive(:from=).with('johndoe@email.com')
-          expect(mail_double).to receive(:sender=).with('John Doe')
-          expect(mail_double).to receive(:content_type=).with('text/html')
-          expect(mail_double).to receive(:body=)
-        end
-
         mail.deliver
+
+
+        aggregate_failures do
+          expect(mail.mail.to).to eq(['to@email.com'])
+          expect(mail.mail.from).to eq(['johndoe@email.com'])
+          expect(mail.mail.sender).to eq('John Doe')
+          expect(mail.mail.content_type).to eq('text/html')
+          expect(mail.mail.body).not_to be_nil
+        end
       end
 
       it 'delivers mail through delivery method' do
-        expect(delivery_method_double).to receive(:deliver!).with(mail_double)
+        expect(delivery_method_double).to receive(:deliver!)
 
         mail.deliver
       end
@@ -59,23 +60,24 @@ RSpec.describe MonkeyMail::Mail::LetterOpener do
 
     before do
       allow(MonkeyMail).to receive(:client).and_return(client_double)
+      allow_any_instance_of(MonkeyMail::Mail::LetterOpener).to receive(:delivery_method).and_return(delivery_method_double)
     end
 
     describe '#deliver' do
       it 'prepares mail from params' do
-        aggregate_failures do
-          expect(mail_double).to receive(:to=).with('to@email.com')
-          expect(mail_double).to receive(:from=).with('johndoe@email.com')
-          expect(mail_double).to receive(:sender=).with('John Doe')
-          expect(mail_double).to receive(:content_type=).with('text/html')
-          expect(mail_double).to receive(:body=).with('some_html')
-        end
-
         mail.deliver
+
+        aggregate_failures do
+          expect(mail.mail.to).to eq(['to@email.com'])
+          expect(mail.mail.from).to eq(['johndoe@email.com'])
+          expect(mail.mail.sender).to eq('John Doe')
+          expect(mail.mail.content_type).to eq('text/html')
+          expect(mail.mail.body).to eq('some_html')
+        end
       end
 
       it 'delivers mail through delivery method' do
-        expect(delivery_method_double).to receive(:deliver!).with(mail_double)
+        expect(delivery_method_double).to receive(:deliver!)
 
         mail.deliver
       end

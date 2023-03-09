@@ -2,29 +2,18 @@
 
 require 'mail'
 require 'letter_opener'
+require 'letter_opener_web' if defined?(Rails)
 require 'monkey_mail/mail/base'
 
 module MonkeyMail
   module Mail
     class LetterOpener < Base
-      attr_reader :mail, :delivery_method
-
-      def initialize(
-        params,
-        mail = ::Mail.new,
-        delivery_method = ::LetterOpener::DeliveryMethod.new
-      )
-        super(params)
-
-        @mail = mail
-        @delivery_method = delivery_method
-      end
+      attr_accessor :mail
 
       def deliver
         return if params[:skip_delivery]
 
         prepare_mail!
-
         delivery_method.deliver!(mail)
       end
 
@@ -34,7 +23,17 @@ module MonkeyMail
 
       private
 
+      def delivery_method
+        case MonkeyMail.configuration.delivery_method
+        when :letter_opener
+          ::LetterOpener::DeliveryMethod.new
+        when :letter_opener_web
+          ::LetterOpenerWeb::DeliveryMethod.new
+        end
+      end
+
       def prepare_mail!
+        @mail = ::Mail.new
         mail.to = params[:to]
         mail.from = params[:from_email]
         mail.sender = params[:from_name]

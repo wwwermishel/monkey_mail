@@ -27,7 +27,7 @@ module MonkeyMail
       private
 
       def worker
-        Drill::DeliveryWorker
+        MonkeyMail::DeliveryWorker
       end
     end
   end
