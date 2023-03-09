@@ -16,6 +16,7 @@ module MonkeyMail
 
         raise NotImplementedError
 
+        # TODO
         # if wait
         #   worker.perform_in(wait.to_i, template_name, message_hash)
         # else

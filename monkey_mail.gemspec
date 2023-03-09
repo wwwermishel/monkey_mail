@@ -2,10 +2,10 @@
 
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'drill/version'
+require 'monkey_mail/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'drill-mailer'
+  spec.name          = 'monkey-mail'
   spec.version       = MonkeyMail::VERSION
   spec.authors       = ['']
   spec.email         = ['']
@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'letter_opener', '~> 1.8'
   spec.add_development_dependency 'mail', '~> 2.7'
+  spec.add_development_dependency 'rest-client', '~> 2.1'
 
   spec.add_development_dependency 'bundler', '~> 2.4'
   spec.add_development_dependency 'rake', '~> 13.0'

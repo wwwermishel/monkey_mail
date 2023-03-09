@@ -4,7 +4,7 @@ require 'monkey_mail/mail'
 
 module MonkeyMail
   class Mailer
-    PERMITTED_PARAM_KYES = %i[subject from_name from_email to vars template_name skip_delivery]
+    PERMITTED_PARAM_KYES = %i[subject from_name from_email to vars template_name skip_delivery].freeze
 
     attr_reader :action_name
 
@@ -27,9 +27,9 @@ module MonkeyMail
     end
 
     def mail(params = {})
-      params[:template_name] ||= action_name
+      params[:template_name] = template_name(params)
 
-      result_params = MonkeyMail.configuration.default_mail_parameters
+      result_params = MonkeyMail.configuration.default_mail_parameters.dup
       result_params.merge!(vars: vars_from_instance_variables)
       result_params.merge!(params)
       result_params[:to] = [params[:to]] if params[:to].is_a? String
@@ -39,6 +39,12 @@ module MonkeyMail
     end
 
     private
+
+    def template_name(params)
+      template_name ||= params[:template_name] || action_name
+      template_name = "#{template_name}_#{params[:locale]}" if params[:locale]
+      template_name
+    end
 
     def permitted_params(params)
       params.slice(*PERMITTED_PARAM_KYES)

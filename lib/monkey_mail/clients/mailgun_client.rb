@@ -1,9 +1,9 @@
 require 'rest_client'
-require 'json'
+require 'monkey_mail/clients/base_client'
 
 module MonkeyMail
   module Clients
-    class MailgunClient
+    class MailgunClient < BaseClient
       attr_reader :api_key, :domain
 
       def initialize(api_key, domain)
@@ -13,18 +13,14 @@ module MonkeyMail
 
       def send_template(template_name:, subject:, from_email:, from_name:, to:, vars:)
         payload = { :from => "#{from_name} <#{from_email}>",
-                     :to => to.join(', '),
-                     :subject => subject,
-                     :template => template_name,
-                     't:variables' => vars.to_json }
+                    :to => to.join(', '),
+                    :subject => subject,
+                    :template => template_name,
+                    't:variables' => vars.to_json }
 
         RestClient::Request.execute(method: :post,
                                     url: messages_url,
                                     payload: payload)
-      end
-
-      def render_template
-        raise NotImplementedError
       end
 
       private
@@ -39,4 +35,3 @@ module MonkeyMail
     end
   end
 end
-

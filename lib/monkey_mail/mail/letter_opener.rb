@@ -35,7 +35,7 @@ module MonkeyMail
       private
 
       def prepare_mail!
-        mail.to =params[:to]
+        mail.to = params[:to]
         mail.from = params[:from_email]
         mail.sender = params[:from_name]
         mail.content_type = 'text/html'
@@ -43,7 +43,7 @@ module MonkeyMail
       end
 
       def render_html
-        MonkeyMail.client.render_template(delivery_params)
+        MonkeyMail.client.render_template(**render_template_params)['html']
       end
     end
   end

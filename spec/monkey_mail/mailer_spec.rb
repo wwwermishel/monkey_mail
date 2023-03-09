@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-RSpec.describe Drill::Mailer do
+require 'monkey_mail'
+
+RSpec.describe MonkeyMail::Mailer do
   let(:mailer) do
-    Class.new(Drill::Mailer) do
+    Class.new(MonkeyMail::Mailer) do
       def notify(foo, bar); end
     end
   end
@@ -24,7 +26,7 @@ RSpec.describe Drill::Mailer do
 
   describe '#mail' do
     let(:mailer) do
-      Class.new(Drill::Mailer) do
+      Class.new(MonkeyMail::Mailer) do
         def notify(params = {})
           @foo = 'foo'
 
@@ -36,13 +38,13 @@ RSpec.describe Drill::Mailer do
     it 'sets vars from instance variables' do
       mail = mailer.notify
 
-      expect(mail.params.vars).to eq(foo: 'foo')
+      expect(mail.params[:vars]).to eq(foo: 'foo')
     end
 
     it 'sets action name as template name' do
       mail = mailer.notify
 
-      expect(mail.params.template_name).to eq(:notify)
+      expect(mail.params[:template_name]).to eq(:notify)
     end
 
     it 'ignores extra params' do
@@ -53,15 +55,25 @@ RSpec.describe Drill::Mailer do
       it 'overrides action name' do
         mail = mailer.notify(template_name: :template_name)
 
-        expect(mail.params.template_name).to eq(:template_name)
+        expect(mail.params[:template_name]).to eq(:template_name)
       end
     end
 
-    context 'when vars are passed' do
-      it 'merges them with vars from instance variables' do
-        mail = mailer.notify(vars: { bar: 'bar' })
+    context 'when added locale' do
+      context 'when action name as template name' do
+        it 'make a name from action name and postfix' do
+          mail = mailer.notify(locale: 'ru')
 
-        expect(mail.params.vars).to eq(foo: 'foo', bar: 'bar')
+          expect(mail.params[:template_name]).to eq('notify_ru')
+        end
+      end
+
+      context 'when template name is passed' do
+        it 'make a name from param name and postfix' do
+          mail = mailer.notify(template_name: :template_name, locale: 'ru')
+
+          expect(mail.params[:template_name]).to eq('template_name_ru')
+        end
       end
     end
   end
