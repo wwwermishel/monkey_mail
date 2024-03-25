@@ -11,11 +11,12 @@ module MonkeyMail
         @domain = domain
       end
 
-      def send_template(template_name:, subject:, from_email:, from_name:, to:, vars:)
+      def send_template(template_name:, subject:, from_email:, from_name:, to:, vars:, attachment: nil)
         payload = { :from => "#{from_name} <#{from_email}>",
                     :to => to.join(', '),
                     :subject => subject,
                     :template => template_name,
+                    :attachment => attachment,
                     't:variables' => vars.to_json }
 
         RestClient::Request.execute(method: :post,

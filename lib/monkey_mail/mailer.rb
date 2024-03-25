@@ -4,7 +4,7 @@ require 'monkey_mail/mail'
 
 module MonkeyMail
   class Mailer
-    PERMITTED_PARAM_KYES = %i[subject from_name from_email to vars template_name skip_delivery].freeze
+    PERMITTED_PARAM_KYES = %i[subject from_name from_email to vars template_name skip_delivery attachment].freeze
 
     attr_reader :action_name
 
